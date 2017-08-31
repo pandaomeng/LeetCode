@@ -4,25 +4,15 @@ class Solution(object):
     :type s: str
     :rtype: int
     """
-    max = 0
-    ret = ''
+    start = maxlength = 0
+    usedChar = {}
     for i in range(len(s)):
-      length = 1
-      cur = s[i]
-      for each in s[i + 1: len(s)]:
-        if (each not in cur):
-          length += 1
-          cur += each
-        else:
-          if (length > max):
-            max = length
-            ret = cur
-          break
+      if s[i] in usedChar and start <= usedChar[s[i]]:
+        start = usedChar[s[i]] + 1
       else:
-        if (length > max):
-          max = length
-          ret = cur
-    return max
+        maxlength = max(maxlength, i - start + 1)
+      usedChar[s[i]] = i
+    return maxlength
 
 
 if __name__ == '__main__':
