@@ -5,51 +5,47 @@ class Solution(object):
     :type nums2: List[int]
     :rtype: float
     """
-    nums1Start = 0
-    nums1End = len(nums1) - 1
-    nums2Start = 0
-    nums2End = len(nums2) - 1
-    resultArr = [0] * (len(nums1) + len(nums2))
+    m = len(nums1)
+    n = len(nums2)
+    if m > n:
+      A, B, m, n = B, A, n, m
+    # 如果half含有.5，则进位（总数为奇数时，左部比右部多一个数）
+    half = (m + n + 1) // 2
+    # samll big : 表示nums1的取分割值范围
+    imin = 0
+    imax = m
 
-    while True:
-      if nums1Start <= nums1End and nums2Start <= nums2End:
-        if nums1[nums1Start] < nums2[nums2Start]:
-          resultArr[nums1Start + nums2Start] = nums1[nums1Start]
-          nums1Start += 1
-        else:
-          resultArr[nums1Start + nums2Start] = nums2[nums2Start]
-          nums2Start += 1
-        if nums1[nums1End] > nums2[nums2End]:
-          resultArr[nums1End + nums2End + 1] = nums1[nums1End]
-          nums1End -= 1
-        else:
-          resultArr[nums1End + nums2End + 1] = nums2[nums2End]
-          nums2End -= 1
-      # nums1还存在至少一个数
-      elif nums1Start <= nums1End:
-        # nums1还存在至少两个数
-        if nums1End - nums1Start > 0:
-          resultArr[nums1Start + nums2Start] = nums1[nums1Start]
-          resultArr[nums1End + nums2End + 1] = nums1[nums1End]
-          nums1Start += 1
-          nums1End -= 1
-        # nums1只存在一个数
-        else:
-          return nums1[nums1Start]
-      # nums2还存在至少一个数
-      elif nums2Start <= nums2End:
-        # nums2还存在至少两个数
-        if nums2End - nums2Start > 0:
-          resultArr[nums1Start + nums2Start] = nums2[nums2Start]
-          resultArr[nums1End + nums2End + 1] = nums2[nums2End]
-          nums2Start += 1
-          nums2End -= 1
-        # nums1只存在一个数
-        else:
-          return nums2[nums2Start]
-      # 数组长度为偶数
+    while imin <= imax:
+      # i j : 两个数组被分割后
+
+      i = (imin + imax) // 2
+      j = half - i
+      if i < m and B[j - 1] > A[i]:
+        # i is too small, must increase it
+      imin = i + 1
+      elif i > 0 and A[i - 1] > B[j]:
+        # i is too big, must decrease it
+        imax = i - 1
       else:
-        return (resultArr[len(resultArr) // 2 - 1] + resultArr[len(resultArr) // 2]) / 2
+        # i is perfect
+        if i == 0:
+          max_of_left = B[j - 1]
+        elif j == 0:
+          max_of_left = A[i - 1]
+        else:
+          max_of_left = max(A[i - 1], B[j - 1])
+
+        if (m + n) % 2 == 1:
+          return max_of_left
+
+        if i == m:
+          min_of_right = B[j]
+        elif j == n:
+          min_of_right = A[i]
+        else:
+          min_of_right = min(A[i], B[j])
+
+        return (max_of_left + min_of_right) / 2.0
 
 
 if __name__ == '__main__':
