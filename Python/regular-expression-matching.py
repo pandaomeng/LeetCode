@@ -1,34 +1,40 @@
 class Solution(object):
+  # dp算法
   def isMatch(self, text, pattern):
-    if not pattern:
-      return not text
+    #text长度为T  pattern长度为P， 构造(T+1)(P+1)大小的矩阵
+    T = len(text)
+    P = len(pattern)
+    dp = [[False] * (P+1) for _ in range(T+1)]
+    dp[-1][-1] = True
+    for i in range(T, -1, -1):
+      # 若j为空，则肯定不匹配，故从P-1开始
+      for j in range(P-1, -1, -1):
+        # i的下标为T时，text为空串
+        if i < T and pattern[j] in {text[i], '.'}:
+          first_match = True
+        else:
+          first_match = False
 
-    #判断text的第一个字符是否和pattern的第一个字符相同
-    #bool(text)：有可能text已经没有了，但是pattern还有，这时候first_match总是false
-    first_match = bool(text) and pattern[0] in {text[0], '.'}
-
-    if len(pattern) >= 2 and pattern[1] == '*':
-      #把*从前往后去掉来测试正则
-      return self.isMatch(text, pattern[2:]) or first_match and self.isMatch(text[1:], pattern)
-    else:
-      return first_match and self.isMatch(text[1:], pattern[1:])
+        # 如果pattern后一个是*，特殊处理：
+        # 1. dp[i][j] = dp[i][j+2]， 直接舍弃
+        # 2. first_match and dp[i+1][j]， 继续看后面的
+        if j+1 < P and pattern[j+1] == '*':
+          dp[i][j] = dp[i][j+2] or first_match and dp[i+1][j]
+        # 没有*的话直接匹配下一个
+        else:
+          dp[i][j] = first_match and dp[i+1][j+1]
+    return dp[0][0]
+    
 
 if __name__ == '__main__':
   solution = Solution()
-  # print(solution.isMatch("aa", "a"))
-  # print(solution.isMatch("aa", "aa"))
-  # print(solution.isMatch("aaa", "aa"))
-  # print(solution.isMatch("aa", "a*"))
-  # print(solution.isMatch("aa", ".*"))
-  # print(solution.isMatch("ab", ".*"))
-  # print(solution.isMatch("aab", "c*a*b"))
+  print(solution.isMatch("aa", "a"))
+  print(solution.isMatch("aa", "aa"))
+  print(solution.isMatch("aaa", "aa"))
+  print(solution.isMatch("aa", "a*"))
+  print(solution.isMatch("aa", ".*"))
+  print(solution.isMatch("ab", ".*"))
+  print(solution.isMatch("aab", "c*a*b"))
 
   #Time limited
-  print(solution.isMatch("aaaaaaaaaaaaab","a*a*a*a*a*a*a*a*a*a*c"))
-
-
-
-  #错误：如果pattern*不能匹配text的第一个字符，则往后面找
-  #      如果pattern*能匹配text的第一个字符，就不找了，是错的
-  #反例：
-  #print(solution.isMatch("aaa", "a*a"))
+  # print(solution.isMatch("aaaaaaaaaaaaab","a*a*a*a*a*a*a*a*a*a*c"))
