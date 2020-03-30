@@ -17,27 +17,37 @@
  * @return {number[][]}
  */
 const threeSum = function(nums) {
-  const sortedArr = nums.sort((a, b) => a - b);
   let result = [];
-  for (let i = 0; i < sortedArr.length; i++) {
-    const current = sortedArr[i];
-    const rest = sortedArr.filter((item, j) => j !== i);
+  nums = nums.sort((a, b) => a - b);
 
-    // const uniqueArr = [...new Set(rest)];
-    const map = uniqueArr.reduce((a, c) => ({ ...a, [c]: c }), {});
-    for (let j = 0; j < uniqueArr.length; j++) {
-      const theSecond = uniqueArr[j];
-      const theThird = map[0 - (current + theSecond)];
-      if (theThird !== undefined) {
-        result.push([current, theSecond, theThird]);
+  for (let i = 0; i <= nums.length - 3; i++) {
+    let left = i + 1;
+    let right = nums.length - 1;
+    while (left < right) {
+      const sum = nums[i] + nums[left] + nums[right];
+      if (sum === 0) {
+        result.push([nums[i], nums[left], nums[right]]);
+        while (nums[left] === nums[left + 1]) {
+          left += 1;
+          continue;
+        }
+        while (nums[right] === nums[right - 1]) {
+          right -= 1;
+          continue;
+        }
+        left += 1;
+        right -= 1;
+      } else if (sum < 0) {
+        left += 1;
+      } else if (sum > 0) {
+        right -= 1;
       }
     }
-
-    console.log("current", current);
-    console.log("rest", rest);
+    while (nums[i] === nums[i + 1]) {
+      i += 1;
+    }
   }
   return result;
-  console.log("sortedArr", sortedArr);
 };
 
 console.log(threeSum([-1, 0, 1, 2, -1, -4]));
